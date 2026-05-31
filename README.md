@@ -1,4 +1,4 @@
-# 📈 Advanced Customer Analytics Project (RFM, Cohort & Pareto)
+# 📈 Customer Analytics Project (RFM, Cohort & Pareto)
 
 An end-to-end data analytics project built on a retail transactional dataset containing exactly **9,994 rows and 21 columns**. This study implements an RFM (Recency, Frequency, Monetary) behavioral segmentation framework and synthesizes it with Cohort Retention analysis, Revenue Concentration analysis, Order Gap timelines, and Calibrated Discount Sensitivity metrics to detect margin leakage and optimize customer management strategies.
 
