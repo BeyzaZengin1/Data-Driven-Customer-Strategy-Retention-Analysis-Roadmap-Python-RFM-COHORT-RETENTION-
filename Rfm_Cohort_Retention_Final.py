@@ -1,8 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[1]:
-
 
 ## DATA LOADING
 
@@ -13,8 +8,6 @@ import matplotlib.pyplot as plt
 import datetime as dt
 
 
-# In[2]:
-
 
 ## DISPLAY SETTINGS
 
@@ -22,9 +15,6 @@ pd.set_option('display.max_columns', None)
 pd.set_option('display.max_colwidth', None)
 pd.set_option('display.width', 1000)
 df = pd.read_csv(r'C:\Users\Hp\Sample - Superstore (1).csv', encoding='latin-1')
-
-
-# In[3]:
 
 
 ## EDA
@@ -36,9 +26,6 @@ print(df.isnull().sum())  # No null values
 print(df.info())  # Inconsistent data types
 print(df.describe().T)
 print(df.duplicated().sum())  # 0
-
-
-# In[57]:
 
 
 ## ADVANCED EDA
@@ -55,9 +42,6 @@ cat_cols = [col for col in cat_cols if col not in cat_but_car]
 # Numericals
 num_cols = [col for col in df.columns if df[col].dtypes in ["int64", "float64"]]
 num_cols = [col for col in num_cols if col not in num_but_cat]
-
-
-# In[5]:
 
 
 # Fixed all data types using a function
@@ -92,13 +76,7 @@ def set_column_types(df, cat_cols, num_cols, cat_but_car, num_but_cat):
 df = set_column_types(df, cat_cols, num_cols, cat_but_car, num_but_cat)
 
 
-# In[6]:
-
-
 df.info()
-
-
-# In[7]:
 
 
 ## DATA VALIDATION
@@ -122,13 +100,7 @@ qty_zero_sales = df[(df['Quantity'].astype(int) > 0) & (df['Sales'] == 0)]
 discount_issue = df[(df['Discount'].astype(float) > 0) & (df['Sales'] <= 0)]
 
 
-# In[8]:
-
-
 print(df[['Sales', 'Profit']].describe().T)
-
-
-# In[58]:
 
 
 ## IQR CALCULATION
@@ -142,9 +114,6 @@ for i, col in enumerate(num_cols):
     plt.show()
 
 
-# In[10]:
-
-
 # Defined outlier thresholds using this function
 
 def outlier_thresholds(dataframe, col_name, q1=0.25, q3=0.75, factor=1.5):
@@ -156,8 +125,6 @@ def outlier_thresholds(dataframe, col_name, q1=0.25, q3=0.75, factor=1.5):
     return low_limit, up_limit
 
 
-# In[11]:
-
 
 # WINSORIZATION FUNCTION
 
@@ -167,7 +134,6 @@ def replace_with_thresholds(dataframe, variable, low_limit, up_limit):
     return dataframe
 
 
-# In[59]:
 
 
 # SALES CLEANING
@@ -178,15 +144,10 @@ low_s, up_s = outlier_thresholds(df, "Sales", factor=3)  # I only trimmed the ex
 low_s = max(low_s, 0) # Sales cannot be negative. In RFM, we measure the total value a customer has generated, so zero or negative values are irrelevant and must be corrected.
 
 
-# In[60]:
-
-
 # WINSORIZE
 
 df = replace_with_thresholds(df, "Sales", low_s, up_s)
 
-
-# In[14]:
 
 
 # IQR
@@ -194,23 +155,17 @@ df = replace_with_thresholds(df, "Sales", low_s, up_s)
 low_p, up_p = outlier_thresholds(df, "Profit", factor=3)
 
 
-# In[15]:
-
 
 # WINSORIZE
 
 df = replace_with_thresholds(df, "Profit", low_p, up_p)
 
 
-# In[16]:
-
 
 # CONTROLLING
 
 print(df[["Sales", "Profit"]].describe().T)
 
-
-# In[17]:
 
 
 ## RFM
@@ -224,15 +179,11 @@ rfm = df.groupby('Customer ID').agg({
     'Sales': lambda x: x.sum()})
 
 
-# In[18]:
-
 
 # Adding column names
 
 rfm.columns = ['recency', 'frequency', 'monetary']
 
-
-# In[19]:
 
 
 # SCORING
@@ -242,16 +193,10 @@ rfm["frequency_score"] = pd.qcut(rfm['frequency'].rank(method="first"), 5, label
 rfm["monetary_score"] = pd.qcut(rfm['monetary'].rank(method="first"), 5, labels=[1, 2, 3, 4, 5])
 
 
-# In[20]:
-
 
 # CALCULATING RF_SCORE 
 
 rfm["RF_SCORE"] = rfm['recency_score'].astype(str) + rfm['frequency_score'].astype(str)
-
-
-# In[21]:
-
 
 # SEGMENT MAP
 
@@ -269,13 +214,9 @@ seg_map = {
 }
 
 
-# In[22]:
-
 
 rfm['segment'] = rfm['RF_SCORE'].replace(seg_map, regex=True)
 
-
-# In[23]:
 
 
 # Data type casting for calculations
@@ -285,21 +226,14 @@ rfm['frequency'] = rfm['frequency'].astype(int)
 rfm['monetary'] = rfm['monetary'].astype(float)
 
 
-# In[24]:
-
 
 print(rfm['segment'].value_counts())
-
-
-# In[25]:
 
 
 # STATISTICAL SUMMARY BY SEGMENT
 
 rfm_stats = rfm[["segment", "recency", "frequency", "monetary"]].groupby("segment").agg(["mean", "count", "sum"])
 
-
-# In[26]:
 
 
 # Redefined columns with clear and descriptive names
@@ -310,13 +244,8 @@ rfm_stats = rfm_stats.sort_values(by="monetary_sum", ascending=False)
 #rfm['monetary'] = pd.to_numeric(rfm['monetary'], errors='coerce')
 
 
-# In[27]:
-
-
 print(rfm_stats)
 
-
-# In[363]:
 
 
 # Customer count and total revenue share by segment: Which segment generates the most revenue?
@@ -326,16 +255,12 @@ segment_analysis.columns = ["customer_count", "total_monetary"]
 print(segment_analysis)
 
 
-# In[364]:
-
 
 # Calculating percentage distributions
 
 total_customers = segment_analysis["customer_count"].sum()
 total_revenue = segment_analysis["total_monetary"].sum()
 
-
-# In[365]:
 
 
 segment_analysis["customer_share_%"] = (segment_analysis["customer_count"] / total_customers) * 100
@@ -344,8 +269,6 @@ segment_analysis["revenue_share_%"] = (segment_analysis["total_monetary"] / tota
 print(segment_analysis.sort_values(by="revenue_share_%", ascending=False))
 print(segment_analysis.sort_values(by="customer_share_%", ascending=False))
 
-
-# In[30]:
 
 
 # High monetary value but low frequency (Big Spenders)
@@ -356,13 +279,9 @@ print(f"Total of {len(big_spenders)} 'Whale' customers identified, but they are 
 print(big_spenders[["recency", "frequency", "monetary", "segment"]].head())
 
 
-# In[31]:
-
 
 df['Discount'] = df['Discount'].astype(float)
 
-
-# In[62]:
 
 
 # Calculate customer-based discount metrics
@@ -379,13 +298,12 @@ discount_analysis.columns = ['Customer ID', 'avg_discount_rate', 'total_transact
 # (What percentage of transactions included a discount?)
 discount_analysis['discount_dependency_ratio'] = (discount_analysis['discounted_transactions_count'] / discount_analysis['total_transactions']) * 100
 
-# Define "Discount Hunters" (Filtering)
+# Defined "Discount Hunters" 
 # Criteria: Customers with more than 70% of transactions discounted and an average discount rate above the company average.
 threshold_ratio = 0.7
 avg_market_discount = discount_analysis['avg_discount_rate'].mean()
 
-discount_hunters = discount_analysis[
-    (discount_analysis['discount_dependency_ratio'] >= threshold_ratio) & 
+discount_hunters = discount_analysis[(discount_analysis['discount_dependency_ratio'] >= threshold_ratio) & 
     (discount_analysis['avg_discount_rate'] > avg_market_discount)].sort_values(by='discount_dependency_ratio', ascending=False)
 
 # Merge with RFM Segments (How many discount hunters are in each segment?)
@@ -396,7 +314,7 @@ print(f"Total of {len(discount_hunters)} 'Discount Hunters' identified.")
 print("-" * 30)
 print(discount_hunters.head(10))
 
-# 5. Segment-based Discount Sensitivity Summary
+# Segment-based Discount Sensitivity Summary
 segment_discount_summary = final_discount_report.groupby('segment').agg({
     'discount_dependency_ratio': 'mean',
     'avg_discount_rate': 'mean',
@@ -407,9 +325,6 @@ print("\n--- Segment Discount Dependency Summary ---")
 print(segment_discount_summary)
 
 
-# In[63]:
-
-
 # Calculate discount metrics from the dataset 
 discount_metrics = df.groupby('Customer ID').agg({
     'Discount': 'mean',  # Average discount rate (%)
@@ -417,17 +332,17 @@ discount_metrics = df.groupby('Customer ID').agg({
 }).reset_index()
 
 
-# In[64]:
-
 
 # Merge with the RFM table (the table containing segments)
+
 rfm_discount = rfm.merge(discount_metrics, on='Customer ID', how='left')
 
 
-# In[67]:
+
 
 
 # Analyze discount utilization by segment
+
 segment_discount_report = rfm_discount.groupby('segment').agg({
     'Discount': 'mean',  # Average discount rate of the segment
     'Customer ID': 'count',  # Number of customers in the segment
@@ -438,14 +353,9 @@ print("--- Segment-Based Discount Sensitivity ---")
 print(segment_discount_report)
 
 
-# In[66]:
-
-
 
 df['Sales'] = pd.to_numeric(df['Sales'], errors='coerce').fillna(0)
 
-
-# In[34]:
 
 
 # High-value customers at risk of churning
@@ -456,14 +366,10 @@ danger_zone = rfm[
     (rfm["frequency_score"].astype(int) >= 3)].sort_values("monetary", ascending=False)
 
 
-# In[68]:
-
 
 print(f"URGENT INTERVENTION REQUIRED: {len(danger_zone)} High-Value Customers Identified!")
 print(danger_zone.head(10))
 
-
-# In[36]:
 
 
 # Sorted customers by total spending in descending order
@@ -474,8 +380,6 @@ total_revenue = rfm_sorted['monetary'].sum()
 rfm_sorted['revenue_share'] = (rfm_sorted['cum_sum'] / total_revenue) * 100
 
 
-# In[69]:
-
 
 # Identified the core customer group generating 80% of total revenue
 
@@ -485,33 +389,28 @@ pareto_percentage = (len(pareto_limit) / len(rfm)) * 100
 print(f"Insight: {pareto_percentage:.1f}% of customers generate 80% of total revenue.")
 
 
-# In[70]:
 
 
-# 1. List of customers in the Pareto group
+# List of customers in the Pareto group
 pareto_customers = pareto_limit.copy()
 
-# 2. Analyze the distribution of these customers across segments
+# Analyze the distribution of these customers across segments
 pareto_segment_dist = pareto_customers['segment'].value_counts()
 
 print(f"A total of {len(pareto_customers)} customers generate 80% of the total revenue.")
 print("\n--- Segment Distribution of Pareto Group Customers ---")
 print(pareto_segment_dist)
 
-# 3. Display the top 20 rows of this list
+# Display the top 20 rows of this list
 print("\n--- Top 20 Customers Driving 80% of Revenue ---")
 print(pareto_customers[['recency', 'frequency', 'monetary', 'segment', 'cum_sum']].head(20))
 
-
-# In[39]:
 
 
 # Map segment information back to the main dataframe (df)
 
 df_with_segments = df.merge(rfm[['segment']], on='Customer ID', how='left')
 
-
-# In[71]:
 
 
 # Identified the top 3 most preferred categories per segment
@@ -521,9 +420,6 @@ top_products_by_segment = top_products_by_segment.sort_values(['segment', 'Order
 
 print("MOST POPULAR CATEGORIES BY SEGMENT:")
 print(top_products_by_segment.groupby('segment').head(2))
-
-
-# In[41]:
 
 
 # Reset index to clean up the table and make segment names visible
@@ -538,14 +434,11 @@ aov_report = rfm_stats_clean[['segment', 'AOV']].sort_values(by='AOV', ascending
 print(aov_report)
 
 
-# In[45]:
+# COHORT ANALYSIS
 
 
-# %% COHORT ANALYSIS
+#  DATA PREPARATION
 
-# =========================
-# 1. DATA PREPARATION
-# =========================
 
 df['Order Date'] = pd.to_datetime(df['Order Date'])
 
@@ -556,12 +449,8 @@ df['Order Month'] = df['Order Date'].dt.to_period('M').dt.to_timestamp()
 df['Cohort Month'] = df.groupby('Customer ID')['Order Month'].transform('min')
 
 
-# In[46]:
+# COHORT INDEX
 
-
-# =========================
-# 2. COHORT INDEX
-# =========================
 
 def get_date_int(df, column):
     year = df[column].dt.year
@@ -576,13 +465,8 @@ months_diff = order_month - cohort_month
 
 df['CohortIndex'] = years_diff * 12 + months_diff + 1
 
+# COHORT TABLE (ABSOLUTE VALUES)
 
-# In[47]:
-
-
-# =========================
-# 3. COHORT TABLE (ABSOLUTE VALUES)
-# =========================
 
 cohort_group = (df.groupby(['Cohort Month', 'CohortIndex'])['Customer ID'].nunique().reset_index())
 
@@ -593,12 +477,8 @@ cohort_counts = cohort_group.pivot(
 ).fillna(0)
 
 
-# In[48]:
+# RETENTION MATRIX 
 
-
-# =========================
-# 4. RETENTION MATRIX (SAFE)
-# =========================
 if 1 not in cohort_counts.columns:
     raise ValueError("Cohort index 1 does not exist → retention cannot be calculated")
 
@@ -612,12 +492,9 @@ retention = cohort_counts.divide(cohort_sizes, axis=0)
 retention.index = retention.index.strftime('%Y-%m')
 
 
-# In[387]:
 
+# RETENTION DROP ANALYSIS
 
-# =========================
-# 7. RETENTION DROP ANALYSIS
-# =========================
 avg_retention = retention.mean(axis=0)
 retention_diff = avg_retention.diff()
 
@@ -628,12 +505,8 @@ print("\n Worst Drop Month:", retention_diff.idxmin())
 print(" Max Drop Value:", retention_diff.min())
 
 
-# In[49]:
+# COHORT SIZE INSIGHT
 
-
-# =========================
-# 8. COHORT SIZE INSIGHT
-# =========================
 
 cohort_summary = pd.DataFrame({
     "cohort_size": cohort_sizes
@@ -643,12 +516,9 @@ print("\n Cohort Sizes:")
 print(cohort_summary.head())
 
 
-# In[50]:
 
+# TOP / BOTTOM COHORTS
 
-# =========================
-# 9. TOP / BOTTOM COHORTS
-# =========================
 
 print("\n Best Cohorts (avg retention):")
 print(retention.mean(axis=1).sort_values(ascending=False).head())
@@ -657,12 +527,10 @@ print("\n Worst Cohorts (avg retention):")
 print(retention.mean(axis=1).sort_values().head())
 
 
-# In[51]:
 
 
-# =========================
-# 11. SEGMENT BASED RETENTION
-# =========================
+# SEGMENT BASED RETENTION
+
 
 segments = ['Consumer', 'Corporate']
 
@@ -673,12 +541,9 @@ print("\n--- Corporate Segment Distribution Across Cohort Indexes ---")
 print(df[df["Segment"] == "Corporate"]["CohortIndex"].value_counts().head(3))
 
 
-# In[73]:
 
-
-# =========================
 #  ORDER GAP ANALYSIS
-# =========================
+
 
 # I sorted the dataset chronologically by customer and order date to map the timeline
 df = df.sort_values(['Customer ID', 'Order Date'])
@@ -701,8 +566,6 @@ print(f"Average order gap: {avg_gap:.2f} days")
 print(f"Median order gap: {median_gap:.2f} days")
 
 
-# In[74]:
-
 
 # I grouped the data by customer and date to calculate the number of unique Order IDs per day
 same_day_distinct_orders = df.groupby(['Customer ID', 'Order Date']).agg({
@@ -718,10 +581,8 @@ print("\n--- I isolated and listed the top 10 customers experiencing this system
 print(real_same_day_buyers.sort_values(by='Order ID', ascending=False).head(10))
 
 
-# In[75]:
 
-
-# Strategic Customer Analytics Action Plan (2026)
+# Strategic Customer Analytics Action Plan 
 
 # --- 🚨 SECTION 1: EMERGENCY CRISIS INTERVENTIONS (CRITICAL GROUPS) ---
 emergency_interventions = {
