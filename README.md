@@ -1,6 +1,6 @@
 # 📈 Advanced Customer Analytics Project (RFM, Cohort & Pareto)
 
-An end-to-end data analytics project built on a retail transactional dataset containing exactly **9,994 rows and 21 columns**. This study implements an RFM (Recency, Frequency, Monetary) behavioral segmentation framework and synthesizes it with Cohort Retention analysis, Revenue Concentration analysis, and Discount Sensitivity metrics to detect margin leakage and optimize customer management strategies.
+An end-to-end data analytics project built on a retail transactional dataset containing exactly **9,994 rows and 21 columns**. This study implements an RFM (Recency, Frequency, Monetary) behavioral segmentation framework and synthesizes it with Cohort Retention analysis, Revenue Concentration analysis, Order Gap timelines, and Calibrated Discount Sensitivity metrics to detect margin leakage and optimize customer management strategies.
 
 ---
 
@@ -8,7 +8,8 @@ An end-to-end data analytics project built on a retail transactional dataset con
 
 * **🐋 The Whale Paradox:** Out of the 73 ultra-high-spending accounts (Whales) isolated based on high monetary value, **0% belong to the 'Champions' segment**. High-value accounts like `AH-10690` (Recency: 412 days) and `AJ-10795` (Recency: 168 days) have slipped into dormant or at-risk segments due to a lack of systematic re-engagement.
 * **📉 Month 2 Retention Cliff:** Cohort analysis tracks the historical longevity of customers and highlights that the most severe drop-off occurs in Month 2, showing a **93.9% customer churn rate**. Particularly, late 2017 cohorts (September through November) exhibit long-term retention locked below 2%.
-* **🏷️ Systemic Discount Dependency:** Across the entire customer database, average discount dependency remains above 50%. Notably, **171 unique accounts operate as 100% Discount Hunters** (never purchasing a single item at full retail price), and the critical `Loyal Customers` segment holds a high dependency rating of **54.3%**.
+* **🏷️ Systemic Discount Dependency:** Across the entire customer database, average discount dependency remains critically high. Notably, following a calibration of the markdown threshold to **0.7 (70% or higher discount rate)**, exactly **371 unique accounts operate as High-Discount Hunters**, while the critical `Loyal Customers` segment holds a steep dependency rating of **54.3%**.
+* **⚡ Transaction-Level Markdown Risk:** Setting the strict mathematical threshold at **0.7** isolated more than 300 aggressive markdown transactions. These transactions are heavily concentrated in low-margin product lines, representing a significant source of structural profit friction.
 * **🎯 Revenue Concentration:** Data sorting shows that **445 unique customers drive exactly 80% of total company revenue**. Within this 445-account core group, a high concentration of high-value revenue is highly volatile, including **65 accounts sitting in `At Risk` and 29 accounts sitting in `Can't Lose Them`**.
 
 ---
@@ -22,10 +23,11 @@ The dataset consists of **9,994 rows and 21 columns**.
 * **Categorical Constraints:** Object columns including `Segment`, `Region`, and `Category` were cast to the `category` type for runtime and memory optimization.
 * **Relational Formatting:** Elements like `Postal Code` were cast as strings to prevent structural data corruption.
 
-### 2. Logical Data Assertions
+### 2. Logical Data Assertions & Gap Analysis
 * **Chronological Check:** Verified that `Ship Date` >= `Order Date` for 100% of the dataset; zero structural discrepancies were found.
 * **Quantity & Revenue Screening:** Scanned for anomalies where $Quantity \le 0$ or $Sales \le 0$ to eliminate corrupt transactional logic.
 * **Margin Friction Analysis:** Identified 1,871 loss-making records where $Profit < 0$. These were deliberately retained to preserve the historical footprint of margin strain caused by deep discounting.
+* **Order Gap Metric:** To baseline the true purchasing rhythm of the user base, consecutive order timelines were calculated by shifting transaction dates via `shift(-1)`. Calculating both the mean and median order gaps served as the mathematical threshold for our re-engagement and onboarding timelines.
 
 ### 3. Outlier Management (Winsorization)
 Standard $1.5 \times IQR$ thresholding proved too aggressive, stripping away legitimate enterprise-level high-value transactions. A **Factor 3 IQR threshold** was utilized to compute bounds, followed by a two-sided **Winsorization** to stabilize variance without breaking the distribution shape:
@@ -69,7 +71,7 @@ Customers were ranked based on Recency and Frequency percentiles using `pd.qcut`
 * **Need Attention (32 Customers):** Dormant for 81 days. Distribute a short feedback and brand perception questionnaire offering a fixed-value store credit upon completion to disrupt their transition down into the "At Risk" category.
 
 ### 🥶 Priority 3: Low-Cost Automation & Cost Mitigation
-* **Discount Hunters (171 Customers):** Completely price-dependent accounts that have never bought items at full retail price. Exclude them entirely from marketing campaigns targeting high-margin inventory. Treat this group exclusively as an optimization lever to clear out warehouse dead stock during annual liquidation periods.
+* **Discount Hunters (371 Customers):** This expanded group of 371 accounts exhibits severe price-dependency, triggered almost exclusively by aggressive markdowns under the calibrated 0.7 filter. Exclude them entirely from marketing campaigns targeting high-margin inventory to protect net margins. Treat this group exclusively as an optimization lever to clear out warehouse dead stock and liquidate inventory via zero-cost automated channels.
 * **About to Sleep (58 Customers):** Inactive for 75 days with faint historical engagement metrics. Limit outreach to zero-cost, low-priority automated bulk clearance newsletters to test for baseline price responses.
 * **Promising (18 Customers):** Highly vulnerable to the Month 2 retention cliff. Warm them up using content-driven educational emails explaining product use cases, anchored with low-tier promotional incentives to lock in their second transaction.
 * **Hibernating (171 Customers):** Absent for over a year with minimal past revenue footprints. Suppress them entirely from paid marketing audiences to save capital. Restrict interactions to zero-cost, quarterly automated mail touchpoints.
