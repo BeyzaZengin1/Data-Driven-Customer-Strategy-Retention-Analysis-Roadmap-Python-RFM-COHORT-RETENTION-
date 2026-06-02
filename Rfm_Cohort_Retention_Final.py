@@ -139,7 +139,7 @@ def replace_with_thresholds(dataframe, variable, low_limit, up_limit):
 # SALES CLEANING
 
 #I used winsorization for Sales outlier cleaning because high-value sales carry significant business value
-low_s, up_s = outlier_thresholds(df, "Sales", factor=3)  # I only trimmed the extreme edges. Using a $1.5 \times IQR$ threshold would have been too aggressive, removing too much data and discarding valuable customers.
+low_s, up_s = outlier_thresholds(df, "Sales", factor=3)  # I only trimmed the extreme edges. Using a 1.5 \times IQR threshold would have been too aggressive, removing too much data and discarding valuable customers.
 # I prioritized preserving the data distribution.
 low_s = max(low_s, 0) # Sales cannot be negative. In RFM, we measure the total value a customer has generated, so zero or negative values are irrelevant and must be corrected.
 
