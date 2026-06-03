@@ -1,4 +1,4 @@
-## 📈 Customer Analytics & Business Intelligence Project (RFM, Cohort & Pareto)
+## 📈 Data-Driven Customer Strategy & Retention Analysis Roadmap Project (RFM, Cohort & Pareto)
 
 An end-to-end data analytics and business intelligence project built on a retail transactional dataset containing exactly 9,994 rows and 21 columns. This study implements an RFM (Recency, Frequency, Monetary) behavioral segmentation framework and synthesizes it with Time-Based Cohort Retention analysis, Pareto Revenue Concentration analysis, Order Gap timelines, and Calibrated Discount Sensitivity metrics to detect net profit margin leakage and construct data-driven growth marketing strategies.
 
@@ -42,14 +42,14 @@ Segment  -  Mean - Recency (Days)  -  Mean  - Frequency (Orders)  -  Mean Moneta
 
 🏆 Champions - 15.26 - 9.05 - 3000.49 - 88  -  11.10%  -  15.94% - Office Supplies
 💎 Loyal Customers  57.49  - 8.73  -  2927.91  - 148  -  18.66%  -  26.16% - Office Supplies
-⭐ Potential Loyalists  28.085.631921.9811114.00%12.88%  Office Supplies
-🚨 At Risk  224.276.572264.7110713.49%14.63%  Office Supplies
-💔 Can't Lose Them  212.879.972985.43394.92%7.03%  Office Supplies
-⚠️ Need Attention  81.006.401976.78324.04%3.82%  Office Supplies
-💤 About to Sleep  75.084.011371.39587.31%4.80%  Office Supplies
-🌱 New Customers  15.283.28952.51212.65%1.21%  Office Supplies
-⚡ Promising  40.663.27965.22182.27%1.05%  Office Supplies
-🥶 Hibernating  378.543.711209.27
+⭐ Potential Loyalists  28.08  -  5.63  -  1921.98  -  111  -  14.00%  -  12.88% - Office Supplies
+🚨 At Risk  224.27  -  6.57  -  2264.71  -  107  - 13.49% - 14.63% - Office Supplies
+💔 Can't Lose Them  212.87  -  9.97  -  2985.43  -  39  -  4.92%  -  7.03%  - Office Supplies
+⚠️ Need Attention  81.00  -  6.40  -  1976.78  -  32  -  4.04%  -  3.82% - Office Supplies
+💤 About to Sleep  75.08  -  4.01  -  1371.39  -  58  -  7.31%  -  4.80% - Office Supplies
+🌱 New Customers  15.28  -  3.28 - 952.51 -  21  - 2.65%  -  1.21% - Office Supplies
+⚡ Promising  40.66  -  3.27  -  965.22  -  18  -  2.27%  -  1.05% - Office Supplies
+🥶 Hibernating  378.54  -  3.71  -  1209.27 - 171  - 	21.56%	- 12.48%	-  Office Supplies
 
 
 ## 🏁 Segment-Based Strategic Action Plan
